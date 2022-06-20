@@ -25,13 +25,19 @@ if st.button('Process'):
     if len(labels) < 1:
         st.error('Please choose at least one label')
         st.stop()
+    final_keywords = []
     results_df = pd.DataFrame({'label': labels})
     for idx_label, label in enumerate(labels):
         keywords = get_keywords(review_text, label)
+        final_keywords += keywords
         for idx_keyword, keyword in enumerate(keywords):
             keyword_column = 'Keyword {0}'.format(idx_keyword + 1)
             if keyword_column not in results_df.columns:
                 results_df[keyword_column] = ''
             results_df.loc[idx_label, keyword_column] = keyword
 
+    st.subheader('Keywords for each label')
     st.dataframe(results_df)
+
+    st.subheader('Final result:')
+    st.write(list(set(final_keywords)))
