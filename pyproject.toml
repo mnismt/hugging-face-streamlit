@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "hugging-face"
+version = "0.1.0"
+description = ""
+authors = ["Thanh Minh <thanhgamedev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.8, <3.11"
+tensorflow = "^2.9.1"
+transformers = "^4.20.0"
+torch = "^1.11.0"
+streamlit = "^1.10.0"
+nltk = "^3.7"
+numpy = "^1.22.4"
+pandas = "^1.4.2"
+openpyxl = "^3.0.10"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "^1.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
