@@ -58,5 +58,5 @@ if st.button('Process'):
     st.subheader('Keywords for each label')
     st.dataframe(results_df)
 
-    st.subheader('Final result:')
+    st.subheader('Final results:')
     st.write(list(set(final_keywords)))
