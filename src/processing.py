@@ -116,21 +116,19 @@ class CategorizeReviewTextLabel:
                 'IF KEYWORDS PRESENT NO SENTIMENT', flat=True)
             for no_sentiment_keyword in NO_SENTIMENT_KEYWORDS:
                 if no_sentiment_keyword in self.review_text.text:
-
-                    KEEP_WORDS = self.get_label_data('UNLESS WORDS PRESENT')
-                    DELETE_WORDS = self.get_label_data('IF LABELS PRESENT')
-                    keep_consistency = keep_or_delete_label(review_text=self.review_text.text.lower(
-                    ), KEEP_WORDS=KEEP_WORDS, DELETE_WORDS=DELETE_WORDS)
-                    if keep_consistency:
-                        new_keywords = self._keywords
-
-                    # if consistency and texture not exists in review text, remove corresponding label
-                    else:
-                        new_keywords = [keyword for keyword in self.keywords if keyword !=
-                                        'consistency (positive)' and keyword != 'consistency (negative)']
-                    new_keywords.append(no_sentiment_keyword)
-                    self._keywords = new_keywords
+                    self._keywords.append(no_sentiment_keyword)
                     self.FOUND_KEYWORD = True
+
+            KEEP_WORDS = self.get_label_data('UNLESS WORDS PRESENT')
+            DELETE_WORDS = self.get_label_data('IF LABELS PRESENT')
+            keep_consistency = keep_or_delete_label(review_text=self.review_text.text.lower(
+            ), KEEP_WORDS=KEEP_WORDS, DELETE_WORDS=DELETE_WORDS)
+            if not keep_consistency:
+                try:
+                    self._keywords.remove('consistency (positive)')
+                    self._keywords.remove('consistency (negative)')
+                except:
+                    pass
 
         # handle the exception
         if 'BREAKDOWN REGARDLESS OF SENTIMENT' in self.label_data:
@@ -253,14 +251,12 @@ class CategorizeReviewTextLabel:
                 DELETE_WORDS = breakdown['IF LABELS PRESENT']
                 keep_consistency = keep_or_delete_label(review_text=self.review_text.text.lower(
                 ), KEEP_WORDS=KEEP_WORDS, DELETE_WORDS=DELETE_WORDS)
-                if keep_consistency:
-                    new_keywords = self._keywords
-
-                # if consistency and texture not exists in review text, remove corresponding label
-                else:
-                    new_keywords = [keyword for keyword in self.keywords if keyword !=
-                                    'consistency (positive)' and keyword != 'consistency (negative)']
-                self._keywords = new_keywords
+                if not keep_consistency:
+                    try:
+                        self._keywords.remove('consistency (positive)')
+                        self._keywords.remove('consistency (negative)')
+                    except:
+                        pass
 
             if idx == 1:
                 CORRESPONDING_KEYWORDS = breakdown['RERUN CATEGORY']
