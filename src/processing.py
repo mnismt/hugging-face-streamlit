@@ -13,6 +13,8 @@ class CategorizeReviewTextLabel:
     self.label_type = self.detect_label_type()
     if self.label_type != 0:
       self.label_data = labels_data[label]['data']
+    else:
+      self.label_data = {}
     self._keywords = []
     self.FOUND_KEYWORD = False
 
@@ -29,6 +31,8 @@ class CategorizeReviewTextLabel:
     return data
 
   def detect_label_type(self):
+    if self.label == None:
+      return 0
     return labels_data[self.label]['type']
 
   def find_keywords_no_sentiment(self, keywords, change_to_keywords):
@@ -52,6 +56,7 @@ class CategorizeReviewTextLabel:
   def processing(self):
     # label_type = 0 => not run
     if self.label_type == 0:
+      self.processing_regardless()
       return
 
     if self.label_type == 1:
@@ -106,16 +111,16 @@ class CategorizeReviewTextLabel:
             if find_keyword.lower() in sentence.text.lower():
 
               # EXCEPTION: if label is fragrance and scent
-              if self.label == 'fragrance and scent':
-                OPPOSITE_WORDS = self.label_data['OPPOSITE WORDS']
-                for opposite_word in OPPOSITE_WORDS:
-                  k = '{0} {1}'.format(
-                      opposite_word, find_keyword.lower())
-                  if k in sentence.text.lower():
-                    self._keywords.append('fragrance free')
+              # if self.label == 'fragrance and scent':
+              #   OPPOSITE_WORDS = self.label_data['OPPOSITE WORDS']
+              #   for opposite_word in OPPOSITE_WORDS:
+              #     k = '{0} {1}'.format(
+              #       opposite_word, find_keyword.lower())
+              #     if k in sentence.text.lower():
+              #       self._keywords.append('fragrance free')
 
               # Exception: eye;circles;dark;darkness;bag;hood
-              elif WORD_COMBINATION:
+              if WORD_COMBINATION:
                 count = 0
                 sentence_text = sentence.text.lower()
                 for keyword in flatten(FIND_KEYWORDS):
@@ -138,14 +143,14 @@ class CategorizeReviewTextLabel:
       NO_SENTIMENT_KEYWORDS = self.get_label_data(
           'IF KEYWORDS PRESENT NO SENTIMENT', flat=True)
       for no_sentiment_keyword in NO_SENTIMENT_KEYWORDS:
-        if no_sentiment_keyword in self.review_text.text:
+        if no_sentiment_keyword in self.review_text.text.lower():
           self._keywords.append(no_sentiment_keyword)
           self.FOUND_KEYWORD = True
 
     # handle the exception
     if 'BREAKDOWN REGARDLESS OF SENTIMENT' in self.label_data:
       for keyword_breakdown_regardless in self.get_label_data('BREAKDOWN REGARDLESS OF SENTIMENT'):
-        if keyword_breakdown_regardless in self.review_text.text:
+        if keyword_breakdown_regardless in self.review_text.text.lower():
           self._keywords.append(keyword_breakdown_regardless)
 
     if 'IF WORDS PRESENT' in self.label_data:
